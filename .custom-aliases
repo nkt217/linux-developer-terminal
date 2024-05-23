@@ -1,0 +1,85 @@
+# -- Zsh aliases
+
+# -- zsh commands
+alias editzsh="vim ~/.zshrc"
+alias editaliases="vim ~/.custom-aliases"
+alias reloadzsh="source ~/.zshrc"
+
+# -- project commands
+alias work="cd $MEDIA_ROOT/work"
+alias codebase="cd $MEDIA_ROOT/codebase"
+
+# -- navigation commands
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias /="cd /"
+
+# -- git commands --
+alias gb='git branch'
+alias gbc='git checkout -b'
+alias gbl='git branch -v'
+alias gbL='git branch -av'
+alias gbx='git branch -d'
+alias gbX='git branch -D'
+alias gbm='git branch -m'
+alias gbM='git branch -M'
+alias gbs='git show-branch'
+alias gbS='git show-branch -a'
+
+alias gc='git commit --verbose'
+alias gca='git commit --verbose --all'
+alias gcm='git commit --message'
+alias gco='git checkout'
+
+alias gcr='git revert'
+alias gcR='git reset "HEAD^"'
+
+alias gf='git fetch'
+alias gfc='git clone'
+alias gpl='git pull'
+alias gfr='git pull --rebase'
+
+alias gm='git merge'
+alias gmC='git merge --no-commit'
+alias gmF='git merge --no-ff'
+alias gma='git merge --abort'
+alias gmt='git mergetool'
+
+alias ga='git add'
+alias gaa='git add -A'
+
+# Push (p)
+alias gp='git push'
+alias gpf='git push --force'
+alias gpa='git push --all'
+alias gpA='git push --all && git push --tags'
+#alias gpt='git push --tags'
+alias gpc='git push --set-upstream origin "$(git-branch-current 2> /dev/null)"'
+alias gpp='git pull origin "$(git-branch-current 2> /dev/null)" && git push origin "$(git-branch-current 2> /dev/null)"'
+
+# Rebase (r)
+alias gr='git rebase'
+alias gra='git rebase --abort'
+alias grc='git rebase --continue'
+alias gri='git rebase --interactive'
+alias grs='git rebase --skip'
+
+alias gsts='git stash'
+alias gps='git push origin'
+alias gpf='git push --force'
+alias gpa='git push --all'
+alias gpA='git push --all && git push --tags'
+
+alias gs='git status'
+alias gd='git diff'
+
+alias gl10='git log -n 10'
+alias gl5='git log -n 5'
+alias gl='git log -n '
+
+alias gcf='git clean -f'
+alias gcn='git clean -n'
+alias clean-branches='git branch --merged | egrep -v "(^\*|master|development|production|qa|staging)" | xargs git branch -d'
+

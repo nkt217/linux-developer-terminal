@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    ports:
+      - 9080:8080
+    user: root
+    volumes: 
+      - ~/_data/jenkins:/var/jenkins_home
+    restart: unless-stopped
+    networks: 
+      - devops-network
+
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - 3306:3306
+    volumes:
+      - ~/_data/mariadb:/var/lib/mysql
+    networks: 
+      - devops-network
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ~/_data/postgres:/var/lib/postgresql/data
+    networks: 
+      - devops-network
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - ~/_data/redis:/data
+    networks: 
+      - devops-network
+    
+networks:
+  devops-network:
+    name: devops-network
+    driver: bridge

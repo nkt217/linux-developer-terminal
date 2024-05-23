@@ -1,0 +1,2 @@
+export MEDIA_ROOT="/media/$(whoami)/LxData"
+export SYSTEM_EDITOR="vim"
