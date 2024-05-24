@@ -122,7 +122,8 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	echo "Installing nvm and node..."
 	git clone https://github.com/nvm-sh/nvm.git "$HOME/.nvm"
 		
-	zsh -c "source ~/.zshrc"
+	source ~/.zshrc
+	exec zsh
 
 	nvm install 18 && \
 	npm i -g yarn serve lt pnpm && \
@@ -167,8 +168,9 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	sudo ln -s /var/lib/snapd/snap /snap
 
 	sleep 10s
-	zsh -c "source ~/.zshrc"
-	
+	source ~/.zshrc
+	exec zsh
+
 	sudo snap install p3x-onenote ngrok google-chat-electron notion-snap-reborn
 fi
 
