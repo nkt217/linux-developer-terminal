@@ -7,14 +7,29 @@ line_divider() {
 # get os id
 pkg_manager=""
 
+# Get distribution ID and version
+if [ -f /etc/os-release ]; then
+    source /etc/os-release
+    DISTRO_ID=$ID
+    DISTRO_VERSION=$VERSION_ID
+else
+    line_divider
+    echo "Cannot determine the OS distribution. /etc/os-release not found."
+    line_divider
+    exit 1
+fi
+
+# Determine package manager
+pkg_manager=""
+
 # Check for Debian family
-if [ -f /etc/debian_version ]; then
-    pkg_manager="apt"
+if [[ "$DISTRO_ID" == "debian" || "$DISTRO_ID" == "ubuntu" ]] || [ -f /etc/debian_version ]; then
+	pkg_manager="apt"
 fi
 
 # Check for Red Hat family
-if [ -f /etc/redhat-release ]; then
-    pkg_manager="dnf"
+if [[ "$DISTRO_ID" == "rhel" || "$DISTRO_ID" == "fedora" || "$DISTRO_ID" == "centos" ]] || [ -f /etc/redhat-release ]; then
+	pkg_manager="dnf"
 fi
 
 if [ -z "$pkg_manager" ] || [ "$pkg_manager" == "" ]; then
@@ -102,7 +117,7 @@ ln -nfs /media/$(whoami)/LxData/codebase/000-personal/terminal-setup/.custom-ali
 ln -nfs /media/$(whoami)/LxData/codebase/000-personal/terminal-setup/ssh-keys/id_rsa $HOME/.ssh/id_rsa &&
 ln -nfs /media/$(whoami)/LxData/codebase/000-personal/terminal-setup/ssh-keys/id_rsa.pub $HOME/.ssh/id_rsa.pub
 
-chmod 400 $HOME/.ssh/*
+chmod 400 $HOME/.ssh/id_rsa*
 
 line_divider
 echo 'Installing ohmy-zsh'
