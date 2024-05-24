@@ -1,7 +1,11 @@
 #!/bin/bash
 
 line_divider() {
-    printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+    local cols=$(tput cols)
+    if [[ -z "$cols" ]]; then
+        cols=80  # Default value if tput fails
+    fi
+    printf '%*s\n' "$cols" '' | tr ' ' =
 }
 
 # get os id

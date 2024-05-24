@@ -1,7 +1,11 @@
 #!/bin/zsh
 
 line_divider() {
-    printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =
+    local cols=$(tput cols)
+    if [[ -z "$cols" ]]; then
+        cols=80  # Default value if tput fails
+    fi
+    printf '%*s\n' "$cols" '' | tr ' ' =
 }
 
 # Get OS ID and version
@@ -20,16 +24,16 @@ fi
 pkg_manager=""
 
 # Check for Debian family
-if [[ "$DISTRO_ID" == "debian" || "$DISTRO_ID" == "ubuntu" ]] || [ -f /etc/debian_version ]; then
+if [[ "$DISTRO_ID" = "debian" || "$DISTRO_ID" = "ubuntu" ]] || [ -f /etc/debian_version ]; then
 	pkg_manager="apt"
 fi
 
 # Check for Red Hat family
-if [[ "$DISTRO_ID" == "rhel" || "$DISTRO_ID" == "fedora" || "$DISTRO_ID" == "centos" ]] || [ -f /etc/redhat-release ]; then
+if [[ "$DISTRO_ID" = "rhel" || "$DISTRO_ID" = "fedora" || "$DISTRO_ID" = "centos" ]] || [ -f /etc/redhat-release ]; then
 	pkg_manager="dnf"
 fi
 
-if [ -z "$pkg_manager" ] || [ "$pkg_manager" == "" ]; then
+if [ -z "$pkg_manager" ] || [ "$pkg_manager" = "" ]; then
     line_divider
     echo "OS Family not supported by the script. Only Debian/RedHat based OS supported right now."
     line_divider
@@ -56,9 +60,9 @@ fi
 line_divider
 echo 'Installing initial packages and tools...'
 line_divider
-if [ "$pkg_manager" ==  "apt" ]; then
+if [ "$pkg_manager" =  "apt" ]; then
     sudo apt update  
-elif [ "$pkg_manager" ==  "dnf" ]; then
+elif [ "$pkg_manager" =  "dnf" ]; then
 	sudo dnf install https://rpms.remirepo.net/fedora/remi-release-$(cut -d ' ' -f 3 /etc/fedora-release).rpm
 	sudo dnf config-manager --set-enabled remi
     sudo dnf check-update
@@ -72,12 +76,12 @@ read -q "response?Install php8.2? [Y/n] "
 echo
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	echo 'Installing php8.2...'
-	if [ "$pkg_manager" ==  "apt" ]; then		
+	if [ "$pkg_manager" =  "apt" ]; then		
 		sudo add-apt-repository -r ppa:ondrej/php
 		sudo apt update
-		sudo $pkg_manager install php8.2 php8.2-fpm php8.2-common php8.2-json php8.2-mbstring php8.2-xmlrpc php8.2-soap php8.2-gd php8.2-xml php8.2-intl php8.2-mysql php8.2-pgsql php8.2-cli php8.2-zip php8.2-curl php8.2-bcmath -y
-	elif [ "$pkg_manager" ==  "dnf" ]; then
-		sudo $pkg_manager install php82 php82-php-fpm php82-php-common php82-php-json php82-php-mbstring php82-php-xmlrpc php82-php-soap php82-php-gd php82-php-xml php82-php-intl php82-php-mysql php82-php-mysqlnd php82-php-pgsql php82-php-cli php82-php-zip php82-php-curl php82-php-bcmath php82-php-opcache -y
+		sudo $pkg_manager install php8.2 php8.2-fpm php8.2-common php8.2-mbstring php8.2-xmlrpc php8.2-soap php8.2-gd php8.2-xml php8.2-intl php8.2-mysql php8.2-pgsql php8.2-cli php8.2-zip php8.2-curl php8.2-bcmath -y
+	elif [ "$pkg_manager" =  "dnf" ]; then
+		sudo $pkg_manager install php82 php82-php-fpm php82-php-common php82-php-mbstring php82-php-xmlrpc php82-php-soap php82-php-gd php82-php-xml php82-php-intl php82-php-mysql php82-php-mysqlnd php82-php-pgsql php82-php-cli php82-php-zip php82-php-curl php82-php-bcmath php82-php-opcache -y
 		sudo update-alternatives --install /usr/bin/php php /usr/bin/php82 100
 		sudo update-alternatives --set php /usr/bin/php82
 	fi	
@@ -88,7 +92,7 @@ read -q "response?Install docker? [Y/n] "
 echo
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	echo 'Installing docker engine...'
-	if [ "$pkg_manager" ==  "apt" ]; then
+	if [ "$pkg_manager" =  "apt" ]; then
 		sudo install -m 0755 -d /etc/apt/keyrings
 		curl -fsSL https://download.docker.com/linux/$ID/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 		sudo chmod a+r /etc/apt/keyrings/docker.gpg
@@ -96,17 +100,18 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 		"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$ID \
 			"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" |
 		sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
-	    sudo apt update  
-	elif [ "$pkg_manager" ==  "dnf" ]; then
-		sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-	    sudo dnf check-update
+		sudo apt update  
+	elif [ "$pkg_manager" =  "dnf" ]; then
+		sudo dnf config-manager --add-repo https://download.docker.com/linux/$ID/docker-ce.repo
+		sudo dnf check-update
 	fi
 	sudo $pkg_manager install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 	
 	# configure docker group and permissions for current user
 	sudo groupadd docker
 	sudo usermod -aG docker $USER
-	sudo chown "$USER":"$USER" /home/"$USER"/.docker -R
+	mkdir -p "$HOME/.docker"
+	sudo chown "$USER":"$USER" "$HOME/.docker" -R
 	sudo chmod g+rwx "$HOME/.docker" -R
 fi
 
@@ -115,8 +120,8 @@ read -q "response?Install nvm and nodejs? [Y/n] "
 echo
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	echo "Installing nvm and node..."
-	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | zsh	
-	
+	git clone https://github.com/nvm-sh/nvm.git "$HOME/.nvm"
+		
 	zsh -c "source ~/.zshrc"
 
 	nvm install 18 && \
@@ -140,12 +145,12 @@ read -q "response?Install openvpn3? [Y/n] "
 echo
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	echo 'Installing openvpn3...'
-	if [ "$pkg_manager" ==  "apt" ]; then	    
+	if [ "$pkg_manager" =  "apt" ]; then	    
 		sudo wget https://swupdate.openvpn.net/repos/openvpn-repo-pkg-key.pub
 		sudo apt-key add openvpn-repo-pkg-key.pub && rm -rf openvpn-repo-pkg-key.pub
 		sudo wget -O /etc/apt/sources.list.d/openvpn3.list https://swupdate.openvpn.net/community/openvpn3/repos/openvpn3-$DISTRO.list
 		sudo apt update
-	elif [ "$pkg_manager" ==  "dnf" ]; then
+	elif [ "$pkg_manager" =  "dnf" ]; then
 	    sudo rpm --import https://swupdate.openvpn.net/repos/openvpn-repo-pkg-key.pub
     	sudo dnf config-manager --add-repo=https://swupdate.openvpn.net/community/openvpn3/repos/openvpn3-$(. /etc/os-release && echo "$VERSION_ID").repo
     	sudo dnf check-update
