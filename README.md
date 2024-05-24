@@ -47,8 +47,8 @@ Commit the changes and push into your own repository.
 Once you have setup your scripts, anytime you need to spawn up a new developer environment either on a new VM or a new machine all you need to do is:
 ```
 1. Clone the repository
-2. Run `terminal-setup/scripts/1.install-shell.sh` 
-3. Run `terminal-setup/scripts/2.install-dev-tools.sh` 
+2. Run `terminal-setup/scripts/1.install-shell.sh` and follow the instructions and prompts
+3. Run `terminal-setup/scripts/2.install-dev-tools.sh` and follow the instructions and prompts
 4. Run `terminal-setup/scripts/3.setup-code.sh` 
 5. Run `cd terminal-setup/devops && docker compose up -d` to start the developer tools
 ```
