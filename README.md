@@ -11,7 +11,6 @@ I have tested these scripts on `Ubuntu, Debian, Fedora and CentOS` on VMs as wel
 * NVM and Nodejs
 * OpenVPN3
 * AWS CLI
-* 
 
 # First time setup
 
