@@ -184,4 +184,8 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	flatpak install flathub org.videolan.VLC com.brave.Browser com.google.Chrome com.slack.Slack com.spotify.Client com.adobe.Reader org.gimp.GIMP us.zoom.Zoom com.github.IsmaelMartinez.teams_for_linux com.github.hluk.copyq rest.insomnia.Insomnia fr.handbrake.ghb io.dbeaver.DBeaverCommunity com.sublimetext.three com.jgraph.drawio.desktop -y 
 fi
 
+line_divider
+echo "Changing default shell to ZSH"
+line_divider
+sudo chsh -s $(which zsh)
 exec zsh
