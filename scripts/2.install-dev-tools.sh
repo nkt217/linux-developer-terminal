@@ -8,6 +8,10 @@ line_divider() {
     printf '%*s\n' "$cols" '' | tr ' ' =
 }
 
+update_zshrc() {
+	source ~/.zshrc
+}
+
 # Get OS ID and version
 if [ -f /etc/os-release ]; then
     source /etc/os-release
@@ -122,8 +126,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	echo "Installing nvm and node..."
 	git clone https://github.com/nvm-sh/nvm.git "$HOME/.nvm"
 		
-	source ~/.zshrc
-	exec zsh
+	update_zshrc
 
 	nvm install 18 && \
 	npm i -g yarn serve lt pnpm && \
@@ -167,9 +170,8 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	sudo $pkg_manager install snapd
 	sudo ln -s /var/lib/snapd/snap /snap
 
+	update_zshrc
 	sleep 10s
-	source ~/.zshrc
-	exec zsh
 
 	sudo snap install p3x-onenote ngrok google-chat-electron notion-snap-reborn
 fi
@@ -181,3 +183,5 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 	echo 'Installing flatpak tools...'
 	flatpak install flathub org.videolan.VLC com.brave.Browser com.google.Chrome com.slack.Slack com.spotify.Client com.adobe.Reader org.gimp.GIMP us.zoom.Zoom com.github.IsmaelMartinez.teams_for_linux com.github.hluk.copyq rest.insomnia.Insomnia fr.handbrake.ghb io.dbeaver.DBeaverCommunity com.sublimetext.three com.jgraph.drawio.desktop -y 
 fi
+
+exec zsh
